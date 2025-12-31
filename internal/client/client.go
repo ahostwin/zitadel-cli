@@ -366,6 +366,10 @@ type OIDCAppConfig struct {
 	PostLogoutRedirectURIs []string `json:"postLogoutRedirectUris,omitempty"`
 	AppType                string   `json:"appType"` // "web", "spa", "native"
 	DevMode                bool     `json:"devMode"`
+	// GrantTypes allows overriding default grant types. If empty, defaults are used.
+	// Valid values: "OIDC_GRANT_TYPE_AUTHORIZATION_CODE", "OIDC_GRANT_TYPE_REFRESH_TOKEN",
+	// "OIDC_GRANT_TYPE_DEVICE_CODE"
+	GrantTypes []string `json:"grantTypes,omitempty"`
 }
 
 // ListApps returns all apps in a project.
@@ -425,12 +429,18 @@ func (c *Client) CreateOIDCApp(ctx context.Context, projectID string, cfg OIDCAp
 		authMethod = "OIDC_AUTH_METHOD_TYPE_BASIC" // Client secret
 	}
 
+	// Use custom grant types if provided, otherwise use defaults
+	grantTypes := cfg.GrantTypes
+	if len(grantTypes) == 0 {
+		grantTypes = []string{"OIDC_GRANT_TYPE_AUTHORIZATION_CODE", "OIDC_GRANT_TYPE_REFRESH_TOKEN"}
+	}
+
 	payload := map[string]interface{}{
 		"name":                     cfg.Name,
 		"redirectUris":             cfg.RedirectURIs,
 		"postLogoutRedirectUris":   cfg.PostLogoutRedirectURIs,
 		"responseTypes":            []string{"OIDC_RESPONSE_TYPE_CODE"},
-		"grantTypes":               []string{"OIDC_GRANT_TYPE_AUTHORIZATION_CODE", "OIDC_GRANT_TYPE_REFRESH_TOKEN"},
+		"grantTypes":               grantTypes,
 		"appType":                  oidcAppType,
 		"authMethodType":           authMethod,
 		"accessTokenType":          "OIDC_TOKEN_TYPE_BEARER",
