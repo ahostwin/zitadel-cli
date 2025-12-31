@@ -1,0 +1,62 @@
+# Platform detection
+config_setting(
+    name = "darwin_arm64",
+    constraint_values = [
+        "@platforms//os:macos",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+config_setting(
+    name = "darwin_amd64",
+    constraint_values = [
+        "@platforms//os:macos",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+config_setting(
+    name = "linux_amd64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+# golangci-lint
+alias(
+    name = "golangci-lint",
+    actual = select({
+        ":darwin_arm64": "@golangci_lint_darwin_arm64//:bin",
+        ":darwin_amd64": "@golangci_lint_darwin_amd64//:bin",
+        ":linux_amd64": "@golangci_lint_linux_amd64//:bin",
+    }),
+    visibility = ["//visibility:public"],
+)
+
+# gofumpt (http_file uses :file target)
+alias(
+    name = "gofumpt",
+    actual = select({
+        ":darwin_arm64": "@gofumpt_darwin_arm64//file",
+        ":darwin_amd64": "@gofumpt_darwin_amd64//file",
+        ":linux_amd64": "@gofumpt_linux_amd64//file",
+    }),
+    visibility = ["//visibility:public"],
+)
+
+# Lint runner
+sh_binary(
+    name = "lint",
+    srcs = ["lint.sh"],
+    data = [":golangci-lint"],
+    visibility = ["//visibility:public"],
+)
+
+# Format runner
+sh_binary(
+    name = "fmt",
+    srcs = ["fmt.sh"],
+    data = [":gofumpt"],
+    visibility = ["//visibility:public"],
+)

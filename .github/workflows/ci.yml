@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bazelisk
+        run: |
+          sudo curl -fsSL https://github.com/bazelbuild/bazelisk/releases/download/v1.25.0/bazelisk-linux-amd64 -o /usr/local/bin/bazel
+          sudo chmod +x /usr/local/bin/bazel
+
+      - name: Mount Bazel cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/bazel
+          key: bazel-${{ runner.os }}-${{ hashFiles('.bazelversion', 'MODULE.bazel', 'go.mod') }}
+          restore-keys: bazel-${{ runner.os }}-
+
+      - name: Check formatting
+        run: |
+          bazel run //tools:fmt
+          if [[ -n "$(git diff --name-only)" ]]; then
+            echo "::error::Files need formatting. Run 'make fmt' locally."
+            git diff --name-only
+            exit 1
+          fi
+
+      - name: Lint
+        run: bazel run //tools:lint
+
+      - name: Build
+        run: bazel build //... --config=ci
+
+      - name: Test
+        run: bazel test //... --config=ci

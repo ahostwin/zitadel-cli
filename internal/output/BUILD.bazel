@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "output",
+    srcs = [
+        "output.go",
+        "prompt.go",
+        "spinner.go",
+    ],
+    importpath = "github.com/roylee17/zitadel-cli/internal/output",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_briandowns_spinner//:spinner",
+        "@com_github_fatih_color//:color",
+        "@com_github_manifoldco_promptui//:promptui",
+        "@com_github_olekukonko_tablewriter//:tablewriter",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+    ],
+)

@@ -1,0 +1,20 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "zitadel-cli_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/roylee17/zitadel-cli/cmd/zitadel-cli",
+    visibility = ["//visibility:public"],
+    deps = ["//internal/commands"],
+)
+
+go_binary(
+    name = "zitadel-cli",
+    embed = [":zitadel-cli_lib"],
+    visibility = ["//visibility:public"],
+    x_defs = {
+        "github.com/roylee17/zitadel-cli/internal/version.Version": "{STABLE_VERSION}",
+        "github.com/roylee17/zitadel-cli/internal/version.Commit": "{STABLE_GIT_COMMIT}",
+        "github.com/roylee17/zitadel-cli/internal/version.BuildDate": "{BUILD_DATE}",
+    },
+)

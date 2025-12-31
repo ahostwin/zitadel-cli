@@ -1,0 +1,94 @@
+load("@gazelle//:def.bzl", "gazelle")
+load("@rules_go//go:def.bzl", "go_binary")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load("@rules_pkg//pkg:zip.bzl", "pkg_zip")
+
+# Gazelle configuration for generating BUILD files
+# gazelle:prefix github.com/roylee17/zitadel-cli
+gazelle(name = "gazelle")
+
+# Alias for the main CLI binary
+alias(
+    name = "zitadel-cli",
+    actual = "//cmd/zitadel-cli",
+    visibility = ["//visibility:public"],
+)
+
+# Platform definitions for cross-compilation
+UNIX_PLATFORMS = [
+    ("linux", "amd64"),
+    ("linux", "arm64"),
+    ("darwin", "amd64"),
+    ("darwin", "arm64"),
+]
+
+WINDOWS_PLATFORMS = [
+    ("windows", "amd64"),
+]
+
+ALL_PLATFORMS = UNIX_PLATFORMS + WINDOWS_PLATFORMS
+
+# Cross-platform binary builds
+[
+    go_binary(
+        name = "zitadel-cli-{}-{}".format(goos, goarch),
+        embed = ["//cmd/zitadel-cli:zitadel-cli_lib"],
+        goarch = goarch,
+        goos = goos,
+        pure = "on",
+        static = "on",
+        visibility = ["//visibility:public"],
+        x_defs = {
+            "github.com/roylee17/zitadel-cli/internal/version.Version": "{STABLE_VERSION}",
+            "github.com/roylee17/zitadel-cli/internal/version.Commit": "{STABLE_GIT_COMMIT}",
+            "github.com/roylee17/zitadel-cli/internal/version.BuildDate": "{BUILD_DATE}",
+        },
+    )
+    for goos, goarch in ALL_PLATFORMS
+]
+
+# Release tarballs for Unix platforms
+[
+    pkg_tar(
+        name = "release-{}-{}".format(goos, goarch),
+        srcs = [
+            ":zitadel-cli-{}-{}".format(goos, goarch),
+            "LICENSE",
+            "README.md",
+        ],
+        extension = "tar.gz",
+        package_dir = "zitadel-cli",
+        visibility = ["//visibility:public"],
+    )
+    for goos, goarch in UNIX_PLATFORMS
+]
+
+# Release zip for Windows
+[
+    pkg_zip(
+        name = "release-{}-{}".format(goos, goarch),
+        srcs = [
+            ":zitadel-cli-{}-{}".format(goos, goarch),
+            "LICENSE",
+            "README.md",
+        ],
+        package_dir = "zitadel-cli",
+        visibility = ["//visibility:public"],
+    )
+    for goos, goarch in WINDOWS_PLATFORMS
+]
+
+# Build all release artifacts
+filegroup(
+    name = "release-all",
+    srcs = [":release-{}-{}".format(goos, goarch) for goos, goarch in ALL_PLATFORMS],
+    visibility = ["//visibility:public"],
+)
+
+# Exports for Gazelle
+exports_files([
+    "go.mod",
+    "go.sum",
+    ".golangci.yml",
+    "cliff.toml",
+])

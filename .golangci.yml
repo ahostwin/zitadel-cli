@@ -1,0 +1,105 @@
+# golangci-lint v2 configuration for zitadel-cli
+# https://golangci-lint.run/usage/configuration/
+
+version: "2"
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    # Default linters (enabled by default, listed for clarity)
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+    # Code quality
+    - bodyclose       # Check HTTP response body is closed
+    - contextcheck    # Check context propagation
+    - dupl            # Detect duplicate code
+    - durationcheck   # Check time.Duration calculations
+    - errname         # Check error naming conventions
+    - errorlint       # Find problematic error handling
+    - exhaustive      # Check switch exhaustiveness
+    - goconst         # Find repeated strings that could be constants
+    - gocritic        # Highly extensible Go linter
+    - misspell        # Find misspelled words
+    - nilerr          # Check nil error returns
+    - noctx           # Check http requests use context
+    - prealloc        # Suggest slice preallocation
+    - predeclared     # Check for shadowed predeclared identifiers
+    - revive          # Fast, extensible linter
+    - unconvert       # Remove unnecessary type conversions
+    - unparam         # Report unused function parameters
+
+    # Security
+    - gosec           # Security scanner
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment  # Can be noisy
+
+  gosec:
+    excludes:
+      - G104  # Audit errors not checked (too noisy for CLI)
+
+  revive:
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: exported
+      - name: increment-decrement
+      - name: indent-error-flow
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: var-declaration
+      - name: var-naming
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    disabled-checks:
+      - hugeParam
+      - rangeValCopy
+
+  dupl:
+    threshold: 150
+
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+
+issues:
+  exclude-rules:
+    # Exclude some linters from test files
+    - path: _test\.go
+      linters:
+        - dupl
+        - gosec
+        - goconst
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+formatters:
+  enable:
+    - gofumpt
+
+  settings:
+    gofumpt:
+      extra-rules: true

@@ -1,0 +1,20 @@
+# Build options
+build --enable_platform_specific_config
+
+# Go configuration - static binaries
+build --@rules_go//go/config:pure=true
+build --@rules_go//go/config:static=true
+
+# Test options
+test --test_output=errors
+
+# Release configuration
+build:release --compilation_mode=opt
+build:release --strip=always
+
+# CI configuration
+build:ci --curses=no
+build:ci --color=yes
+
+# Try importing user-specific settings
+try-import %workspace%/user.bazelrc
