@@ -1,6 +1,6 @@
 # zitadel-cli
 
- comprehensive command-line tool for managing [Zitadel](https://zitadel.com/) identity and access management.
+comprehensive command-line tool for managing [Zitadel](https://zitadel.com/) identity and access management.
 
 ## Features
 
@@ -83,19 +83,19 @@ zitadel-cli project create myproject
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `context` | Manage Zitadel contexts (multiple instances) |
-| `org` | Manage organizations |
-| `project` | Manage projects |
-| `app` | Manage OIDC/API applications |
-| `user` | Manage human users |
-| `machine` | Manage machine users (service accounts) |
-| `pat` | Manage Personal Access Tokens |
-| `role` | Manage project roles and grants |
-| `provision` | Provision complete project with apps |
-| `healthz` | Check Zitadel health |
-| `whoami` | Show current context information |
+| Command     | Description                                  |
+| ----------- | -------------------------------------------- |
+| `context`   | Manage Zitadel contexts (multiple instances) |
+| `org`       | Manage organizations                         |
+| `project`   | Manage projects                              |
+| `app`       | Manage OIDC/API applications                 |
+| `user`      | Manage human users                           |
+| `machine`   | Manage machine users (service accounts)      |
+| `pat`       | Manage Personal Access Tokens                |
+| `role`      | Manage project roles and grants              |
+| `provision` | Provision complete project with apps         |
+| `healthz`   | Check Zitadel health                         |
+| `whoami`    | Show current context information             |
 
 ## Context Management
 
@@ -149,6 +149,7 @@ zitadel-cli provision myproject \
 ```
 
 This creates:
+
 - A project with the specified name
 - A frontend SPA application (PKCE)
 - A backend web application (client credentials)
@@ -175,12 +176,12 @@ contexts:
 
 ### Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `ZITADEL_URL` | Zitadel instance URL |
-| `ZITADEL_PAT` | Personal Access Token |
+| Variable             | Description                              |
+| -------------------- | ---------------------------------------- |
+| `ZITADEL_URL`        | Zitadel instance URL                     |
+| `ZITADEL_PAT`        | Personal Access Token                    |
 | `ZITADEL_CONFIG_DIR` | Config directory (default: `~/.zitadel`) |
-| `NO_COLOR` | Disable colored output |
+| `NO_COLOR`           | Disable colored output                   |
 
 ### Priority
 
@@ -252,9 +253,9 @@ zitadel-cli project delete myproject --yes
 ### Exit Codes
 
 | Code | Meaning |
-|------|---------|
-| 0 | Success |
-| 1 | Error |
+| ---- | ------- |
+| 0    | Success |
+| 1    | Error   |
 
 ### Scripting Examples
 
